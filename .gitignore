@@ -1,0 +1,17 @@
+# Node.js / React (Frontend)
+Frontend/node_modules/
+Frontend/build/
+Frontend/.env.local
+Frontend/.env.development.local
+
+# Python / Flask (Backend)
+Backend/__pycache__/
+Backend/venv/
+Backend/env/
+Backend/.env
+Backend/*.pyc
+
+# OS / IDE Specific files
+.DS_Store
+Thumbs.db
+.vscode/

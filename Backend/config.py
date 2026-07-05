@@ -30,6 +30,6 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     
 config_options={
-    "devlopment": DevelopmentConfig,
+    "development": DevelopmentConfig,
     "production": ProductionConfig
 }

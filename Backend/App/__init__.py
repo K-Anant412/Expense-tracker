@@ -21,4 +21,6 @@ def create_app(config_name="development"):
     jwt.init_app(app)
     cors.init_app(app, resources={r"/api/*":{"origins": "*"}})
     
+    from App import models
+    
     return app

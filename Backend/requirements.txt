@@ -17,5 +17,4 @@ python-dotenv==1.0.1
 requests==2.31.0
 
 # After start
-flask_migrate
-flask_jwt_extended
+flasgger==0.9.7.1

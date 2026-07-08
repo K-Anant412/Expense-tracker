@@ -79,10 +79,38 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    """Endpoint to handle user authentication and token generation."""
+    """
+      User Login Endpoint
+      ---
+      tags:
+        - Authentication
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                example: user@example.com
+              password:
+                type: string
+                example: securePass123
+      responses:
+        200:
+          description: Login successful, return JWT token
+        400:
+          description: Missing email or password
+        401:
+          description: Invalid email or password        
+    """
     data = request.get_json()
 
-    if not data or not data.get("email") or not data.get("passeord"):
+    if not data or not data.get("email") or not data.get("password"):
         return jsonify({"error": "Missingemail or password"}), 400
 
     email = data.get("email").strip().lower()

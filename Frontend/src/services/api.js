@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: "http://127.0.0.1:5000/api",
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -15,14 +15,12 @@ API.interceptors.request.use(
         }
         return config;
     },
-    ( error ) => {
-        return Promise.reject( error );
-    }
+    (error) => Promise.reject(error)
 );
 
 export const authService = {
-    register: (username, email, password) => API.post('/auth/register', { username, email, password }),
-    login: (email, password) => API.post('/auth/login', { email, password }),
+  register: (username, email, password) => API.post('/auth/register', { username, email, password }),
+  login: (email, password) => API.post('/auth/login', { email, password }),
 };
 
 export const expenseService = {

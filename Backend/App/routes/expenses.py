@@ -38,7 +38,7 @@ def create_category():
     """
     data = request.get_json(force=True)
     if not data or not data.get("name"):
-        return jsonify({"erroe": "Category name is required"}), 400
+        return jsonify({"error": "Category name is required"}), 400
 
     category_name = data.get("name").strip()
 
@@ -209,6 +209,7 @@ def get_expenses():
 
     return jsonify(output), 200
 
+
 @expense_bp.route("/dashboard/summary", methods=["GET"])
 @jwt_required()
 def get_dashboard_summary():
@@ -257,7 +258,7 @@ def get_dashboard_summary():
   for b in budgets:
     cat_id = b.category_id
     limit = float(b.amount_limit)
-    spent = spending_map(cat_id, 0.0)
+    spent = spending_map.get(cat_id, 0.0)
     
     total_monthly_budget += limit
     total_monthly_spent += spent
@@ -280,3 +281,40 @@ def get_dashboard_summary():
         },
         "category_breakdown": breakdown
     }), 200
+  
+  
+@expense_bp.route("/budgets", methods=["POST"])
+@jwt_required()
+def create_budget():
+    data = request.get_json(force=True)
+    current_user_id = int(get_jwt_identity())
+
+    if not data or not data.get("category_id") or not data.get("amount_limit") or not data.get("month"):
+        return jsonify({"error": "Missing required budget fields"}), 400
+
+    category_id = int(data.get("category_id"))
+    amount_limit = float(data.get("amount_limit"))
+    month = data.get("month").strip()  # Expected format: "YYYY-MM"
+
+    # Verify category belongs to user
+    category = Category.query.filter_by(id=category_id, user_id=current_user_id).first()
+    if not category:
+        return jsonify({"error": "Invalid category assignment"}), 400
+
+    # Check if a budget wrapper already exists for this month/category combo
+    existing_budget = Budget.query.filter_by(
+        user_id=current_user_id, category_id=category_id, month=month
+    ).first()
+
+    if existing_budget:
+        existing_budget.amount_limit = amount_limit
+        message = "Budget updated successfully"
+    else:
+        new_budget = Budget(
+            user_id=current_user_id, category_id=category_id, amount_limit=amount_limit, month=month
+        )
+        db.session.add(new_budget)
+        message = "Budget created successfully"
+
+    db.session.commit()
+    return jsonify({"message": message}), 200

@@ -7,11 +7,10 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 
 const Dashboard = () => {
   const { logoutUser, user } = useContext(AuthContext);
-  // React Hook Form instances for separate forms
+
   const { register: registerBudget, handleSubmit: handleBudgetSubmit, reset: resetBudget } = useForm();
   const { register: registerExpense, handleSubmit: handleExpenseSubmit, reset: resetExpense } = useForm();
 
-  // Core Metrics States
   const [summary, setSummary] = useState({ total_budget: 0, total_spent: 0, net_remaining: 0 });
   const [categories, setCategories] = useState([]);
   const [expenses, setExpenses] = useState([]);
@@ -21,7 +20,6 @@ const Dashboard = () => {
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [fromError, setFormError] = useState('');
 
-  // Core background tracking fetchers
   const fetchDashboardData = async () => {
     try {
       const summaryRes = await expenseService.getDashboardSummary(selectedMonth);
@@ -29,7 +27,7 @@ const Dashboard = () => {
       setCategories(summaryRes.data.category_breakdown);
       
       const expenseRes = await expenseService.getExpenses();
-      setExpenses(expenseRes.data.reverse().slice(0, 5)); // Grab the 5 most recent items
+      setExpenses(expenseRes.data.reverse().slice(0, 5)); 
     } catch (err) {
       console.error("Error communicating with data endpoints", err);
     }
@@ -40,6 +38,7 @@ const Dashboard = () => {
   }, [selectedMonth]);
 
   const resolveCategoryId = async (categoryName) => {
+
   // Fetch existing items first
     const allCats = await expenseService.getCategories();
     const found = allCats.data.find(
@@ -49,14 +48,12 @@ const Dashboard = () => {
     if (found) {
       return found.id;
     }
-    
-    // Create it only if it doesn't exist yet
-    // Ensure your service maps the argument to the object format {"name": categoryName}
+
     const catRes = await expenseService.createCategory(categoryName.trim());
     return catRes.data.category.id;
   };
 
-  // Handler A: Create/Find Category + Configure Monthly Budget Threshold
+  // Handler A:
   const onBudgetSubmit = async (data) => {
   setErrorMessage('');
   try {
@@ -68,7 +65,6 @@ const Dashboard = () => {
       month: selectedMonth
     };
     
-    // Switch to your uniform service instance if possible, or leave as direct API instance
     const API = (await import('../services/api')).default;
     await API.post('/budgets', budgetPayload);
 
@@ -79,18 +75,17 @@ const Dashboard = () => {
   }
 };
 
-  // Handler B: Log Fresh Transaction Expense
+  // Handler B:
   const onExpenseSubmit = async (data) => {
     setErrorMessage('');
     try {
       let categoryId;
 
       try {
-        // 1. Try to generate category string context
         const catRes = await expenseService.createCategory(data.category_name);
         categoryId = catRes.data.category.id;
       } catch (catErr) {
-        // Fallback: search existing categories if duplicate conflict occurs
+
         const allCats = await expenseService.getCategories();
         const found = allCats.data.find(c => c.name.toLowerCase() === data.category_name.toLowerCase());
         
@@ -101,7 +96,6 @@ const Dashboard = () => {
         }
       }
 
-      // 2. Log transaction details cleanly
       await expenseService.createExpense({
         category_id: categoryId,
         amount: parseFloat(data.amount),
@@ -112,17 +106,14 @@ const Dashboard = () => {
       resetExpense();
       fetchDashboardData();
     } catch (finalErr) {
-      // ⚡ Fixed parameter reference naming here!
       setErrorMessage(finalErr.response?.data?.error || finalErr.message || 'Failed to record transactional expense');
     }
   };
 
-  // Chart configuration palettes
   const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
-      {/* Navigation Header bar */}
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans" >
       <nav className="border-b border-slate-800 bg-slate-800/50 backdrop-blur-md px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="h-9 w-9 bg-sky-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-sky-600/30">W</div>

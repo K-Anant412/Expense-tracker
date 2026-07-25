@@ -28,7 +28,7 @@ class ProductionConfig(Config):
     """Production devlopment environment configurations."""
     DEBUG=False
     
-    _raw_uri = os.getenv("DATABASE_URL")
+    _raw_uri = os.getenv("DATABASE_URL", "sqlite:///production_fallback.db")
     
     if _raw_uri and _raw_uri.startswith("postgres://"):
         SQLALCHEMY_DATABASE_URI = _raw_uri.replace("postgres://", "postgresql://", 1)

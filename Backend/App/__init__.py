@@ -59,13 +59,13 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     jwt.init_app(app)
 
-    allowed_origins = os.getenv("FRONTEND_URL", "*").split(",")
-    cors.init_app(app, resources={r"/*": {
-        "origins": allowed_origins,
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }})
-    
+    # allowed_origins = os.getenv("FRONTEND_URL", "*").split(",")
+    # cors.init_app(app, resources={r"/*": {
+    #     "origins": allowed_origins,
+    #     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    #     "allow_headers": ["Content-Type", "Authorization"]
+    # }})
+    cors(app)
     swagger.init_app(app)
 
     from App.routes.auth import auth_bp

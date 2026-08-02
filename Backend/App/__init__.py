@@ -54,16 +54,12 @@ def create_app(config_name=None):
         config_name = os.getenv("FLASK_ENV", "development")
 
     app.config.from_object(config_options[config_name])
-
+    
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
 
     allowed_origins = os.getenv("FRONTEND_URL", "*").split(",")
-    
-    print("=" * 50)
-    print("Allowed Origins:", allowed_origins)
-    print("=" * 50)
 
     cors.init_app(app, resources={r"/*": {
         "origins": allowed_origins,

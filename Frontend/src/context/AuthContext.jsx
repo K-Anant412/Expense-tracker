@@ -27,10 +27,8 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Authentication failed' 
-      };
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Login failed';
+      return { success: false, error: errorMessage };
     }
   };
 

@@ -13,7 +13,6 @@ const Login = () => {
     setServerError('');
     const result = await loginUser(data.email, data.password);
     if (result.success) {
-      // Bounce straight to your fresh dashboard workspace on success!
       navigate('/dashboard');
     } else {
       setServerError(result.error);

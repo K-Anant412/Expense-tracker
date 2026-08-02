@@ -23,15 +23,23 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
    
 class ProductionConfig(Config):
-    """Production development environment configurations."""
     DEBUG = False
-    
-    _raw_uri = os.getenv("DATABASE_URL", "sqlite:///production_fallback.db")
-    
-    if _raw_uri and _raw_uri.startswith("postgres://"):
-        SQLALCHEMY_DATABASE_URI = _raw_uri.replace("postgres://", "postgresql://", 1)
-    else:
-        SQLALCHEMY_DATABASE_URI = _raw_uri
+
+    db_user = os.getenv("DB_USER")
+    db_password = quote_plus(os.getenv("DB_PASSWORD"))
+    db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("DB_PORT")
+    db_database = os.getenv("DB_NAME")
+
+    SQLALCHEMY_DATABASE_URI = (
+        f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
+    )
+
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {
+            "ssl": {}
+        }
+    }
     
 config_options = {
     "development": DevelopmentConfig,

@@ -6,27 +6,25 @@ load_dotenv()
 
 class Config:
     """Base configuration with shared settings"""
-    
-    SECRET_KEY=os.getenv("SECRET_KEY", "fallback-local-development-key")
-    JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY", "fallback-jwt-secret-key")
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    SECRET_KEY = os.getenv("SECRET_KEY", "fallback-local-development-key")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "fallback-jwt-secret-key")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
 class DevelopmentConfig(Config):
     """Local development environment configurations."""
+    DEBUG = True
     
-    DEBUG=True
-    
-    db_user = os.getenv("DB_USER")
-    db_host = os.getenv("DB_HOST")
-    db_password = quote_plus(os.getenv("DB_PASSWORD")) 
-    db_port = os.getenv("DB_PORT")
-    db_database = os.getenv("DB_NAME")
+    db_user = os.getenv("DB_USER", "root")
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_password = quote_plus(os.getenv("DB_PASSWORD", "")) 
+    db_port = os.getenv("DB_PORT", "3306")
+    db_database = os.getenv("DB_NAME", "expense_tracker")
     
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
    
 class ProductionConfig(Config):
-    """Production devlopment environment configurations."""
-    DEBUG=False
+    """Production development environment configurations."""
+    DEBUG = False
     
     _raw_uri = os.getenv("DATABASE_URL", "sqlite:///production_fallback.db")
     
@@ -35,7 +33,7 @@ class ProductionConfig(Config):
     else:
         SQLALCHEMY_DATABASE_URI = _raw_uri
     
-config_options={
+config_options = {
     "development": DevelopmentConfig,
     "production": ProductionConfig
 }

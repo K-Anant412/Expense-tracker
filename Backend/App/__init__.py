@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flasgger import Swagger
 from config import config_options
+import os
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -58,7 +59,8 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     jwt.init_app(app)
     
-    import os
+    # allowed_origins = os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
+    # cors.init_app(app, resources={r"/api/*": {"origins": allowed_origins}})
     allowed_origins = os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
     cors.init_app(app, resources={r"/api/*": {"origins": allowed_origins}})
     
@@ -70,7 +72,7 @@ def create_app(config_name=None):
     from App.routes.expenses import expense_bp
     app.register_blueprint(expense_bp, url_prefix="/api")
     from App import models
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     return app

@@ -58,11 +58,13 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    
-    # allowed_origins = os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
-    # cors.init_app(app, resources={r"/api/*": {"origins": allowed_origins}})
-    allowed_origins = os.getenv("FRONTEND_URL", "http://localhost:5173").split(",")
-    cors.init_app(app, resources={r"/api/*": {"origins": allowed_origins}})
+
+    allowed_origins = os.getenv("FRONTEND_URL", "*").split(",")
+    cors.init_app(app, resources={r"/*": {
+        "origins": allowed_origins,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }})
     
     swagger.init_app(app)
 
@@ -72,7 +74,5 @@ def create_app(config_name=None):
     from App.routes.expenses import expense_bp
     app.register_blueprint(expense_bp, url_prefix="/api")
     from App import models
-    # with app.app_context():
-    #     db.create_all()
 
     return app

@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// 1. Dynamic switch: Checks for Vercel's production environment variable first, falling back to local proxy mapping
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 const API = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
